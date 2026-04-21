@@ -65,7 +65,7 @@ impl Serialize for Query {
                 map.serialize_entry(
                     "parameters",
                     &ParameterMap {
-                        attribute: "refine.ls_d_res_high",
+                        attribute: "rcsb_entry_info.resolution_combined",
                         operator: "less_or_equal",
                         value: ParameterValue::Float(*mr),
                     },
