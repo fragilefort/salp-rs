@@ -1,3 +1,4 @@
+pub mod process_response;
 pub mod rcsb_reqwest;
 pub mod search;
 
