@@ -6,13 +6,28 @@ use serde::Serialize;
 pub struct SearchRequest<'a> {
     query: &'a Query,
     return_type: &'a str,
+    request_options: RequestOptions,
+}
+
+#[derive(Serialize)]
+struct Pagination {
+    start: u32,
+    rows: u32,
+}
+
+#[derive(Serialize)]
+struct RequestOptions {
+    paginate: Pagination,
 }
 
 impl<'a> SearchRequest<'a> {
-    pub fn new(query: &'a Query) -> Self {
+    pub fn new(query: &'a Query, start: u32, rows: u32) -> Self {
         SearchRequest {
             query,
             return_type: "entry",
+            request_options: RequestOptions {
+                paginate: Pagination { start, rows },
+            },
         }
     }
     pub fn post_request(&self) -> Result<Option<String>, reqwest::Error> {
