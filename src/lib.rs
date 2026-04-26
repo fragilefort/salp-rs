@@ -29,7 +29,7 @@ mod tests {
             Query::Organism("Homo sapiens".to_string()),
             Query::MaxResolution(2.5),
         ]);
-        let req = SearchRequest::new(&query);
+        let req = SearchRequest::new(&query, 0, 100);
         let res = req.post_request().unwrap();
         println!("The result of the search request: {:?}", res)
     }
@@ -40,7 +40,7 @@ mod tests {
             Query::MaxResolution(3.5),
             Query::Keyword("Phosphatase".to_string()),
         ]);
-        let req = SearchRequest::new(&query);
+        let req = SearchRequest::new(&query, 0, 100);
         match req.post_request().unwrap() {
             Some(response) => {
                 let parsed = parse_ids(&response);
