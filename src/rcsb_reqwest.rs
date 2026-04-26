@@ -15,13 +15,15 @@ impl<'a> SearchRequest<'a> {
             return_type: "entry",
         }
     }
-    pub fn post_request(&self) -> Result<String, reqwest::Error> {
+    pub fn post_request(&self) -> Result<Option<String>, reqwest::Error> {
         let client = reqwest::blocking::Client::new();
         let res = client
             .post("https://search.rcsb.org/rcsbsearch/v2/query")
             .json(&self)
-            .send()?
-            .text()?;
-        Ok(res)
+            .send()?;
+        if res.status() == 204 {
+            return Ok(None);
+        }
+        Ok(Some(res.text()?))
     }
 }
