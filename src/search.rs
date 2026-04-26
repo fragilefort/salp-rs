@@ -46,15 +46,8 @@ impl Serialize for Query {
             Query::Keyword(kw) => {
                 let mut map = serializer.serialize_map(None)?;
                 map.serialize_entry("type", "terminal")?;
-                map.serialize_entry("service", "text")?;
-                map.serialize_entry(
-                    "parameters",
-                    &ParameterMap {
-                        attribute: "struct_keywords.pdbx_keywords",
-                        operator: "contains_phrase",
-                        value: ParameterValue::Str(kw),
-                    },
-                )?;
+                map.serialize_entry("service", "full_text")?;
+                map.serialize_entry("parameters", &FullTextParameter { value: kw })?;
                 map.end()
             }
 
@@ -108,6 +101,21 @@ impl<'a> Serialize for ParameterMap<'a> {
         map.serialize_entry("attribute", self.attribute)?;
         map.serialize_entry("operator", self.operator)?;
         map.serialize_entry("value", &self.value)?;
+        map.end()
+    }
+}
+
+struct FullTextParameter<'a> {
+    value: &'a str,
+}
+
+impl<'a> Serialize for FullTextParameter<'a> {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut map = serializer.serialize_map(None)?;
+        map.serialize_entry("value", self.value)?;
         map.end()
     }
 }
