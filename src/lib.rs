@@ -6,6 +6,7 @@ pub mod search;
 mod tests {
     use crate::rcsb_reqwest::SearchRequest;
 
+    use super::process_response::parse_ids;
     use super::search::Query;
 
     #[test]
@@ -30,6 +31,22 @@ mod tests {
         ]);
         let req = SearchRequest::new(&query);
         let res = req.post_request().unwrap();
-        println!("The result of the search request: {}", res)
+        println!("The result of the search request: {:?}", res)
+    }
+    #[test]
+    fn test_parse_response() {
+        let query = Query::And(vec![
+            Query::Organism("Mus musculus".to_string()),
+            Query::MaxResolution(3.5),
+            Query::Keyword("Phosphatase".to_string()),
+        ]);
+        let req = SearchRequest::new(&query);
+        match req.post_request().unwrap() {
+            Some(response) => {
+                let parsed = parse_ids(&response);
+                println!("{:?}", parsed);
+            }
+            None => println!("No results found"),
+        }
     }
 }
