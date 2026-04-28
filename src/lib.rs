@@ -5,6 +5,7 @@ pub mod search;
 #[cfg(test)]
 mod tests {
     use crate::rcsb_reqwest::SearchRequest;
+    use pdbtbx::*;
 
     use super::process_response::parse_ids;
     use super::search::Query;
@@ -48,5 +49,26 @@ mod tests {
             }
             None => println!("No results found"),
         }
+    }
+
+    #[test]
+    fn test_pdbtbx() {
+        let (mut pdb, _error) = pdbtbx::open("example-pdbs/1UBQ.pdb").unwrap();
+        pdb.remove_atoms_by(|atom| atom.element() == Some(&Element::H));
+
+        let mut avg_b_factor = 0.0;
+        for atom in pdb.atoms() {
+            // Iterate over all atoms in the structure
+            avg_b_factor += atom.b_factor();
+        }
+        avg_b_factor /= pdb.atom_count() as f64;
+
+        println!("The average B factor of the protein is: {}", avg_b_factor);
+        pdbtbx::save(
+            &pdb,
+            "dump/1ubq_no_hydrogens.pdb",
+            pdbtbx::StrictnessLevel::Loose,
+        )
+        .unwrap();
     }
 }
