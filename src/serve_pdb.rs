@@ -1,4 +1,4 @@
-use pdbtbx::{self, Format, PDB, ReadOptions};
+use pdbtbx::{self, Format, PDB, ReadOptions, StrictnessLevel, save};
 use reqwest::{self, blocking::get};
 use std::io::BufReader;
 
@@ -23,6 +23,6 @@ pub fn proteins_only(pdb_buffer: &mut PDB) {
     pdb_buffer.remove_atoms_by(|atom| !atom.hetero());
 }
 
-// #TODO
-// Write tests for this module
-// Do we do docking using these pdbs?
+pub fn save_to_disk(pdb: &PDB, filename: &str) {
+    save(pdb, filename, StrictnessLevel::Medium).expect("Failed to save to disk")
+}
