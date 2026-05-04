@@ -13,6 +13,7 @@ pub fn fetch_pdb(pdb_id: &str) -> Result<PDB, Box<dyn std::error::Error>> {
 
     let (pdb, _warn) = ReadOptions::new()
         .set_format(Format::Pdb)
+        .set_level(StrictnessLevel::Loose)
         .read_raw(reader)
         .map_err(|e| format!("{:?}", e))?;
 
