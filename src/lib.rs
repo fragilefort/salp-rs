@@ -91,8 +91,10 @@ mod tests {
 
     #[test]
     fn test_save_to_disk() {
-        let pdb = fetch_pdb("1TUP").expect("Failed to fetch 1TUP");
+        let mut pdb = fetch_pdb("1TUP").unwrap();
+        proteins_only(&mut pdb);
         save_to_disk(&pdb, "/tmp/test_1TUP.pdb");
         assert!(Path::new("/tmp/test_1TUP.pdb").exists());
+        assert!(Path::new("/tmp/test_1TUP.pdb").metadata().unwrap().len() > 0);
     }
 }
