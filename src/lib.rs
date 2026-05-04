@@ -6,10 +6,12 @@ pub mod serve_pdb;
 #[cfg(test)]
 mod tests {
     use crate::rcsb_reqwest::SearchRequest;
+    use crate::serve_pdb::{fetch_pdb, proteins_only, save_to_disk};
     use pdbtbx::*;
 
     use super::process_response::parse_ids;
     use super::search::Query;
+    use std::path::Path;
 
     #[test]
     fn test_query_serialization() {
@@ -59,7 +61,6 @@ mod tests {
 
         let mut avg_b_factor = 0.0;
         for atom in pdb.atoms() {
-            // Iterate over all atoms in the structure
             avg_b_factor += atom.b_factor();
         }
         avg_b_factor /= pdb.atom_count() as f64;
@@ -71,5 +72,27 @@ mod tests {
             pdbtbx::StrictnessLevel::Loose,
         )
         .unwrap();
+    }
+
+    #[test]
+    fn test_fetch_pdb() {
+        let pdb = fetch_pdb("1TUP").expect("Failed to fetch 1TUP");
+        assert!(pdb.atom_count() > 0);
+    }
+
+    #[test]
+    fn test_proteins_only() {
+        let mut pdb = fetch_pdb("1TUP").expect("Failed to fetch 1TUP");
+        let before = pdb.atom_count();
+        proteins_only(&mut pdb);
+        let after = pdb.atom_count();
+        assert!(after <= before);
+    }
+
+    #[test]
+    fn test_save_to_disk() {
+        let pdb = fetch_pdb("1TUP").expect("Failed to fetch 1TUP");
+        save_to_disk(&pdb, "/tmp/test_1TUP.pdb");
+        assert!(Path::new("/tmp/test_1TUP.pdb").exists());
     }
 }
