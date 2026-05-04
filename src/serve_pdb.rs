@@ -19,17 +19,10 @@ pub fn fetch_pdb(pdb_id: &str) -> Result<PDB, Box<dyn std::error::Error>> {
     Ok(pdb)
 }
 
-pub fn proteins_only(pdb_buffer: Vec<PDB>) -> Vec<PDB> {
-    pdb_buffer
-        .into_iter()
-        .map(|mut pdb| {
-            pdb.remove_atoms_by(|atom| !atom.hetero());
-            pdb
-        })
-        .collect()
+pub fn proteins_only(pdb_buffer: &mut PDB) {
+    pdb_buffer.remove_atoms_by(|atom| !atom.hetero());
 }
 
 // #TODO
-// Decide if we will save this pdbs to the disk or not
 // Write tests for this module
 // Do we do docking using these pdbs?
