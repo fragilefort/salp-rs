@@ -1,4 +1,5 @@
 pub mod process_response;
+pub mod python;
 pub mod rcsb_reqwest;
 pub mod search;
 pub mod serve_pdb;

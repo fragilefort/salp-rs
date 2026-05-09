@@ -1,0 +1,15 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
+[project]
+name = "salp-rs"
+version = "0.1.0"
+description = "A Rust library with a python wrapper that allows fetching and (processing) big PBD data via queries by communicating with the RCSB API "
+requires-python = ">=3.8"
+authors = [{name = "fragilefort", email = ""}]
+dependencies = []
+
+[tool.maturin]
+python-source = "python"
+module-name = "salp-rs._python"

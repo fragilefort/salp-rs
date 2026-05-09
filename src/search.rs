@@ -1,5 +1,6 @@
 use serde::ser::{Serialize, SerializeMap, Serializer};
 
+#[derive(Clone)]
 pub enum Query {
     Or(Vec<Query>),
     And(Vec<Query>),
