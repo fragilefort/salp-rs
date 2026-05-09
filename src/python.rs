@@ -1,4 +1,5 @@
 use crate::process_response::parse_ids;
+use crate::serve_pdb::*;
 use crate::{rcsb_reqwest::SearchRequest, search::Query};
 use pyo3::exceptions::PyRuntimeError;
 use pyo3::prelude::*;
@@ -65,10 +66,25 @@ pub fn search(query: PyQuery, start: u32, rows: u32) -> PyResult<(u64, Vec<Strin
     }
 }
 
+#[pyfunction]
+pub fn fetch_and_save(ids: Vec<String>, filter_proteins: bool) -> PyResult<()> {
+    for id in &ids {
+        let mut pdb = fetch_pdb(id)
+            .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
+        if filter_proteins {
+            proteins_only(&mut pdb);
+        }
+        let filename = format!("{}.pdb", id);
+        save_to_disk(&pdb, &filename);
+    }
+    Ok(())
+}
+
 #[pymodule]
 fn salp(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyQuery>()?;
     m.add_function(wrap_pyfunction!(search, m)?)?;
+    m.add_function(wrap_pyfunction!(fetch_and_save, m)?)?;
 
     Ok(())
 }
