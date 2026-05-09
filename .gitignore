@@ -1,6 +1,11 @@
 /target
 /example-pdbs
 /dump/
+/test_structures
 *.so
 *.dll
 *.dylib
+
+__pycache__/
+.pytest_cache/
+.venv/
