@@ -1,4 +1,6 @@
-use crate::search::Query;
+use crate::process_response::parse_ids;
+use crate::{rcsb_reqwest::SearchRequest, search::Query};
+use pyo3::exceptions::PyRuntimeError;
 use pyo3::prelude::*;
 
 #[pyclass]
@@ -43,4 +45,30 @@ impl PyQuery {
             inner: Query::Or(queries.into_iter().map(|q| q.inner).collect()),
         }
     }
+}
+
+#[pyfunction]
+pub fn search(query: PyQuery, start: u32, rows: u32) -> PyResult<(u64, Vec<String>)> {
+    let req = SearchRequest::new(&query.inner, start, rows);
+    let response = req
+        .post_request()
+        .map_err(|e| PyErr::new::<PyRuntimeError, _>(format!("Request failed: {}", e)))?;
+
+    match response {
+        Some(resp) => {
+            let parsed = parse_ids(&resp)
+                .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
+
+            Ok(parsed)
+        }
+        None => Ok((0, vec![])),
+    }
+}
+
+#[pymodule]
+fn salp(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    m.add_class::<PyQuery>()?;
+    m.add_function(wrap_pyfunction!(search, m)?)?;
+
+    Ok(())
 }
