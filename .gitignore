@@ -6,6 +6,4 @@
 *.dll
 *.dylib
 
-__pycache__/
-.pytest_cache/
-.venv/
+/python/salp/__pycache__/
