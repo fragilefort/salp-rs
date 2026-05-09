@@ -131,22 +131,19 @@ jobs:
           pattern: wheels-*
           merge-multiple: true
 
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
-        with:
-          subject-path: 'dist/*'
+      - name: List files
+        run: ls -R dist/
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
 
       - name: Publish to PyPI
         run: |
-          # If tag is v0.1.56, VERSION_NO_V becomes 0.1.56
           VERSION=${{ github.ref_name }}
           VERSION_NO_V=${VERSION#v}
           
-          echo "Publishing version: $VERSION_NO_V"
-          
-          uv publish --check-url https://pypi.org/simple/ "dist/salp_rs-$VERSION_NO_V*"
+          # We use a broad glob dist/*$VERSION_NO_V* 
+          # This catches salp_rs-0.1.59-cp313-manylinux... etc.
+          uv publish --check-url https://pypi.org/simple/ dist/*$VERSION_NO_V*
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
