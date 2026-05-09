@@ -12,4 +12,4 @@ dependencies = []
 
 [tool.maturin]
 python-source = "python"
-module-name = "salp-rs._python"
+module-name = "salp.salp_rs"

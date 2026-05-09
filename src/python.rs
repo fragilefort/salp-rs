@@ -13,7 +13,7 @@ pub struct PyQuery {
 #[pymethods]
 impl PyQuery {
     #[staticmethod]
-    pub fn origanism(org: String) -> PyQuery {
+    pub fn organism(org: String) -> PyQuery {
         PyQuery {
             inner: Query::Organism(org),
         }
@@ -67,14 +67,14 @@ pub fn search(query: PyQuery, start: u32, rows: u32) -> PyResult<(u64, Vec<Strin
 }
 
 #[pyfunction]
-pub fn fetch_and_save(ids: Vec<String>, filter_proteins: bool) -> PyResult<()> {
+pub fn fetch_and_save(ids: Vec<String>, filter_proteins: bool, out_dir: String) -> PyResult<()> {
     for id in &ids {
         let mut pdb = fetch_pdb(id)
             .map_err(|e| PyErr::new::<pyo3::exceptions::PyRuntimeError, _>(e.to_string()))?;
         if filter_proteins {
             proteins_only(&mut pdb);
         }
-        let filename = format!("{}.pdb", id);
+        let filename = format!("{}/{}.pdb", out_dir, id);
         save_to_disk(&pdb, &filename);
     }
     Ok(())
