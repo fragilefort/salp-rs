@@ -117,23 +117,36 @@ jobs:
     if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
     needs: [linux, windows, macos, sdist]
     permissions:
-      # Use to sign the release artifacts
       id-token: write
-      # Used to upload release artifacts
       contents: write
-      # Used to generate artifact attestation
       attestations: write
     steps:
-      - uses: actions/download-artifact@v7
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
         with:
-          subject-path: 'wheels-*/*'
+          path: dist
+          pattern: wheels-*
+          merge-multiple: true
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: 'dist/*'
+
       - name: Install uv
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v5
+
       - name: Publish to PyPI
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        run: uv publish --check-url https://pypi.org/simple/ 'wheels-*/*'
+        run: |
+          # If tag is v0.1.56, VERSION_NO_V becomes 0.1.56
+          VERSION=${{ github.ref_name }}
+          VERSION_NO_V=${VERSION#v}
+          
+          echo "Publishing version: $VERSION_NO_V"
+          
+          uv publish --check-url https://pypi.org/simple/ "dist/salp_rs-$VERSION_NO_V*"
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
