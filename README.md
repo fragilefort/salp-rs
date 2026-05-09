@@ -1,6 +1,6 @@
 # salp
 ![Salp](./assets/Salp_colony,_Aorangaia_PA171899.jpeg)
-*Image credit: By Peter Southwood - Own work, CC BY-SA 3.0*
+*Original image credit: By Peter Southwood - Own work, CC BY-SA 3.0*
 
 A Python library for querying and fetching protein structures from the RCSB PDB, written in Rust.
 
