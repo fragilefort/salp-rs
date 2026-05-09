@@ -22,10 +22,10 @@ uv add salp-rs
 from salp import Query, search, fetch_and_save
 # btw these are the only 2 functions you got
 
-query = PyQuery.and_([
-    PyQuery.organism("Homo sapiens"),
-    PyQuery.max_resolution(2.5),
-    PyQuery.keyword("kinase"),
+query = Query.and_([
+    Query.organism("Homo sapiens"),
+    Query.max_resolution(2.5),
+    Query.keyword("kinase"),
 ])
 
 # This returns the total count and list of PDB IDs
