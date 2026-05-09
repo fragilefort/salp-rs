@@ -81,7 +81,7 @@ pub fn fetch_and_save(ids: Vec<String>, filter_proteins: bool, out_dir: String) 
 }
 
 #[pymodule]
-fn salp(m: &Bound<'_, PyModule>) -> PyResult<()> {
+fn salp_rs(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<PyQuery>()?;
     m.add_function(wrap_pyfunction!(search, m)?)?;
     m.add_function(wrap_pyfunction!(fetch_and_save, m)?)?;

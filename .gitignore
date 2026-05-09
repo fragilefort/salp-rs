@@ -1,3 +1,6 @@
 /target
 /example-pdbs
 /dump/
+*.so
+*.dll
+*.dylib
