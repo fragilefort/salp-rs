@@ -114,15 +114,10 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' }}
     needs: [linux, windows, macos, sdist]
-    permissions:
-      id-token: write
-      contents: write
-      attestations: write
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
@@ -131,7 +126,7 @@ jobs:
           pattern: wheels-*
           merge-multiple: true
 
-      - name: List files
+      - name: Check what was downloaded
         run: ls -R dist/
 
       - name: Install uv
@@ -139,11 +134,6 @@ jobs:
 
       - name: Publish to PyPI
         run: |
-          VERSION=${{ github.ref_name }}
-          VERSION_NO_V=${VERSION#v}
-          
-          # We use a broad glob dist/*$VERSION_NO_V* 
-          # This catches salp_rs-0.1.59-cp313-manylinux... etc.
-          uv publish --check-url https://pypi.org/simple/ dist/*$VERSION_NO_V*
+          uv publish --check-url https://pypi.org/simple/ "dist/*"
         env:
           UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
